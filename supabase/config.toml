@@ -1,1 +1,9 @@
 project_id = "ictgyapylhgltkxpglfc"
+
+[functions.food-recommend]
+enabled = true
+verify_jwt = false
+
+[functions.gemini-chat]
+enabled = true
+verify_jwt = false

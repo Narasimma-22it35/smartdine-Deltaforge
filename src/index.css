@@ -247,3 +247,25 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary/50;
 }
+
+/* Leaflet map overrides */
+.leaflet-container {
+  font-family: var(--font-body);
+  z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply bg-card rounded-xl shadow-card border border-border;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+}
+
+.leaflet-popup-tip {
+  @apply bg-card;
+}
+
+.leaflet-routing-container {
+  display: none !important;
+}

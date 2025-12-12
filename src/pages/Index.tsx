@@ -4,21 +4,25 @@ import SearchInterface from '@/components/SearchInterface';
 import AIResponse from '@/components/AIResponse';
 import CuisineFilter from '@/components/CuisineFilter';
 import RestaurantGrid from '@/components/RestaurantGrid';
-import { restaurants } from '@/data/restaurants';
+import RestaurantMap from '@/components/RestaurantMap';
+import GeminiChatbot from '@/components/GeminiChatbot';
+import { restaurants, Restaurant } from '@/data/restaurants';
 import { useAIRecommendations } from '@/hooks/useAIRecommendations';
+import { Map, LayoutGrid } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [cuisineFilter, setCuisineFilter] = useState('All');
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const { isLoading, result, search, surpriseMe, reset } = useAIRecommendations();
 
   const filteredRestaurants = useMemo(() => {
     if (result) {
-      // If we have AI results, filter those
       if (cuisineFilter === 'All') return result.restaurants;
       return result.restaurants.filter(r => r.cuisine === cuisineFilter);
     }
     
-    // Otherwise show all restaurants with filter
     if (cuisineFilter === 'All') return restaurants;
     return restaurants.filter(r => r.cuisine === cuisineFilter);
   }, [result, cuisineFilter]);
@@ -51,15 +55,57 @@ const Index = () => {
           onChange={handleCuisineChange}
         />
 
-        <RestaurantGrid 
-          restaurants={filteredRestaurants}
-          recommendations={result?.recommendations}
-          title={result ? "AI Picks for You" : "Discover Local Favorites"}
-          subtitle={result 
-            ? "Curated based on your craving" 
-            : "Handpicked spots loved by students and locals alike"
-          }
-        />
+        {/* View Toggle */}
+        <div className="container mx-auto px-4 mb-6">
+          <div className="flex justify-end gap-2">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="gap-2"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === 'map' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('map')}
+              className="gap-2"
+            >
+              <Map className="w-4 h-4" />
+              Map
+            </Button>
+          </div>
+        </div>
+
+        {viewMode === 'grid' ? (
+          <RestaurantGrid 
+            restaurants={filteredRestaurants}
+            recommendations={result?.recommendations}
+            title={result ? "AI Picks for You" : "Discover Local Favorites"}
+            subtitle={result 
+              ? "Curated based on your craving" 
+              : "Handpicked spots loved by students and locals alike"
+            }
+          />
+        ) : (
+          <section className="container mx-auto px-4 pb-16">
+            <div className="text-center mb-8">
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+                Explore Nearby Eateries
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Find restaurants around you and get directions
+              </p>
+            </div>
+            <RestaurantMap 
+              restaurants={filteredRestaurants}
+              selectedRestaurant={selectedRestaurant}
+              onSelectRestaurant={setSelectedRestaurant}
+            />
+          </section>
+        )}
       </main>
 
       {/* Footer */}
@@ -70,6 +116,9 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      {/* Gemini Chatbot */}
+      <GeminiChatbot />
     </div>
   );
 };
