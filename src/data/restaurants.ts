@@ -13,8 +13,13 @@ export interface Restaurant {
   image: string;
   openNow: boolean;
   timing: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
 }
 
+// Coordinates centered around a typical Indian college town (Delhi area)
 export const restaurants: Restaurant[] = [
   {
     id: '1',
@@ -31,6 +36,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400',
     openNow: true,
     timing: '8 AM - 11 PM',
+    coordinates: { lat: 28.6139, lng: 77.2090 },
   },
   {
     id: '2',
@@ -47,6 +53,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400',
     openNow: true,
     timing: '11 AM - 1 AM',
+    coordinates: { lat: 28.6159, lng: 77.2110 },
   },
   {
     id: '3',
@@ -63,6 +70,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400',
     openNow: true,
     timing: '4 PM - 10 PM',
+    coordinates: { lat: 28.6179, lng: 77.2070 },
   },
   {
     id: '4',
@@ -79,6 +87,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400',
     openNow: true,
     timing: '12 PM - 11 PM',
+    coordinates: { lat: 28.6199, lng: 77.2150 },
   },
   {
     id: '5',
@@ -95,6 +104,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400',
     openNow: true,
     timing: '11 AM - 10 PM',
+    coordinates: { lat: 28.6119, lng: 77.2080 },
   },
   {
     id: '6',
@@ -111,6 +121,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=400',
     openNow: true,
     timing: '7 AM - 10 PM',
+    coordinates: { lat: 28.6100, lng: 77.2120 },
   },
   {
     id: '7',
@@ -127,6 +138,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
     openNow: true,
     timing: '11 AM - 11 PM',
+    coordinates: { lat: 28.6250, lng: 77.2200 },
   },
   {
     id: '8',
@@ -143,6 +155,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400',
     openNow: true,
     timing: '12 PM - 11 PM',
+    coordinates: { lat: 28.6170, lng: 77.2040 },
   },
   {
     id: '9',
@@ -159,6 +172,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400',
     openNow: true,
     timing: '6 AM - 12 AM',
+    coordinates: { lat: 28.6135, lng: 77.2085 },
   },
   {
     id: '10',
@@ -175,6 +189,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400',
     openNow: true,
     timing: '12 PM - 11 PM',
+    coordinates: { lat: 28.6300, lng: 77.2250 },
   },
   {
     id: '11',
@@ -191,6 +206,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400',
     openNow: true,
     timing: '5 PM - 2 AM',
+    coordinates: { lat: 28.6145, lng: 77.2065 },
   },
   {
     id: '12',
@@ -207,6 +223,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400',
     openNow: true,
     timing: '11 AM - 11 PM',
+    coordinates: { lat: 28.6165, lng: 77.2130 },
   },
   {
     id: '13',
@@ -223,6 +240,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=400',
     openNow: true,
     timing: '9 AM - 10 PM',
+    coordinates: { lat: 28.6220, lng: 77.2180 },
   },
   {
     id: '14',
@@ -239,6 +257,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
     openNow: true,
     timing: '8 AM - 9 PM',
+    coordinates: { lat: 28.6110, lng: 77.2160 },
   },
   {
     id: '15',
@@ -255,6 +274,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1628294895950-9805252327bc?w=400',
     openNow: true,
     timing: '6 AM - 12 PM, 7 PM - 10 PM',
+    coordinates: { lat: 28.6155, lng: 77.2055 },
   },
   {
     id: '16',
@@ -271,6 +291,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400',
     openNow: true,
     timing: '12 PM - 10 PM',
+    coordinates: { lat: 28.6080, lng: 77.2220 },
   },
   {
     id: '17',
@@ -287,6 +308,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1571006682639-ab18cb17a9dc?w=400',
     openNow: true,
     timing: '10 AM - 10 PM',
+    coordinates: { lat: 28.6175, lng: 77.2100 },
   },
   {
     id: '18',
@@ -303,6 +325,7 @@ export const restaurants: Restaurant[] = [
     image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400',
     openNow: true,
     timing: '24/7',
+    coordinates: { lat: 28.6190, lng: 77.2030 },
   },
 ];
 
