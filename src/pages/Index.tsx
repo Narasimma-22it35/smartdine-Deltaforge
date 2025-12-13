@@ -109,11 +109,37 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-border bg-card">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground">
-            Made with ❤️ for hungry students • SmartDine AI
-          </p>
+      <footer id="about" className="py-12 border-t border-border bg-card">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">SmartDine AI</h3>
+              <p className="text-sm text-muted-foreground">
+                Your intelligent food discovery companion. Find the perfect meal based on your mood, budget, and cravings.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#search" className="hover:text-foreground transition-colors">Discover Food</a></li>
+                <li><a href="#restaurants" className="hover:text-foreground transition-colors">All Restaurants</a></li>
+                <li><a href="#map" className="hover:text-foreground transition-colors">Map View</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">Contact</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>Email: support@smartdine.ai</li>
+                <li>Phone: +91 98765 43210</li>
+                <li>Available: 24/7</li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-border text-center">
+            <p className="text-sm text-muted-foreground">
+              Made with love for hungry students | SmartDine AI 2024
+            </p>
+          </div>
         </div>
       </footer>
 

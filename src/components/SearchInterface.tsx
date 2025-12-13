@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Search, Sparkles, Shuffle, Send, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Sparkles, Shuffle, Send, Loader2, Gift, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -8,6 +8,14 @@ interface SearchInterfaceProps {
   onSurpriseMe: () => void;
   isLoading: boolean;
 }
+
+const surpriseOffers = [
+  { title: "Free Dessert!", description: "Get a free dessert with any main course order at Dessert Paradise today!" },
+  { title: "20% Off!", description: "Enjoy 20% off on your first order at Pizza Point. Use code: SMARTDINE20" },
+  { title: "Buy 1 Get 1!", description: "Buy 1 Biryani, Get 1 Free at Biryani House. Valid till 10 PM tonight!" },
+  { title: "Free Delivery!", description: "Free delivery on all orders above ₹200 from Late Night Kitchen!" },
+  { title: "Student Special!", description: "Show your student ID and get 15% off at Chai Sutta Bar!" },
+];
 
 const suggestions = [
   "something cheesy but not too expensive",
@@ -21,7 +29,8 @@ const suggestions = [
 const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceProps) => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [showSurprisePopup, setShowSurprisePopup] = useState(false);
+  const [currentOffer, setCurrentOffer] = useState(surpriseOffers[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +42,13 @@ const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceP
   const handleSuggestionClick = (suggestion: string) => {
     setQuery(suggestion);
     onSearch(suggestion);
+  };
+
+  const handleSurpriseMe = () => {
+    const randomOffer = surpriseOffers[Math.floor(Math.random() * surpriseOffers.length)];
+    setCurrentOffer(randomOffer);
+    setShowSurprisePopup(true);
+    onSurpriseMe();
   };
 
   return (
@@ -49,8 +65,8 @@ const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceP
             What are you <span className="text-gradient">craving</span> today?
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Tell me how you're feeling, and I'll find the perfect spot for you.
-            Type naturally, like you're texting a friend who knows all the best places.
+            Tell me how you are feeling, and I will find the perfect spot for you.
+            Type naturally, like you are texting a friend who knows all the best places.
           </p>
         </div>
 
@@ -76,7 +92,6 @@ const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceP
                 )}
               </div>
               <input
-                ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -126,7 +141,7 @@ const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceP
           <Button 
             variant="surprise" 
             size="xl"
-            onClick={onSurpriseMe}
+            onClick={handleSurpriseMe}
             disabled={isLoading}
             className="group"
           >
@@ -136,6 +151,35 @@ const SearchInterface = ({ onSearch, onSurpriseMe, isLoading }: SearchInterfaceP
           <p className="text-sm text-muted-foreground mt-2">Feeling adventurous? Let AI pick for you</p>
         </div>
       </div>
+
+      {/* Surprise Popup Modal */}
+      {showSurprisePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative bg-card rounded-3xl shadow-elevated max-w-md w-full p-6 animate-slide-up">
+            <button
+              onClick={() => setShowSurprisePopup(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <Gift className="w-8 h-8 text-primary animate-bounce" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                {currentOffer.title}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {currentOffer.description}
+              </p>
+              <Button onClick={() => setShowSurprisePopup(false)} className="w-full">
+                Awesome! Show My Picks
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

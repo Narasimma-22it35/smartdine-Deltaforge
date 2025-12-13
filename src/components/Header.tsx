@@ -1,6 +1,18 @@
-import { Utensils } from 'lucide-react';
+import { Utensils, Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import NavLink from '@/components/NavLink';
+import { Button } from '@/components/ui/button';
 
 const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: '#search', label: 'Discover' },
+    { href: '#restaurants', label: 'Restaurants' },
+    { href: '#map', label: 'Map View' },
+    { href: '#about', label: 'About' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -13,15 +25,43 @@ const Header = () => {
             <p className="text-xs text-muted-foreground font-body">AI Food Discovery</p>
           </div>
         </div>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#search" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Discover
-          </a>
-          <a href="#restaurants" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Restaurants
-          </a>
+          {navLinks.map((link) => (
+            <NavLink key={link.href} href={link.href}>
+              {link.label}
+            </NavLink>
+          ))}
         </nav>
+
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </Button>
       </div>
+
+      {/* Mobile Navigation */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-background border-b border-border">
+          <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                className="block py-2 px-3 rounded-lg hover:bg-secondary"
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

@@ -1,3 +1,9 @@
+export interface MenuItem {
+  name: string;
+  price: number;
+  available: boolean;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -17,9 +23,10 @@ export interface Restaurant {
     lat: number;
     lng: number;
   };
+  website: string;
+  menu: MenuItem[];
 }
 
-// Coordinates centered around a typical Indian college town (Delhi area)
 export const restaurants: Restaurant[] = [
   {
     id: '1',
@@ -37,6 +44,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '8 AM - 11 PM',
     coordinates: { lat: 28.6139, lng: 77.2090 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Unlimited Thali', price: 120, available: true },
+      { name: 'Butter Chicken', price: 180, available: true },
+      { name: 'Dal Makhani', price: 80, available: true },
+      { name: 'Roti (2 pcs)', price: 20, available: true },
+    ],
   },
   {
     id: '2',
@@ -54,6 +68,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '11 AM - 1 AM',
     coordinates: { lat: 28.6159, lng: 77.2110 },
+    website: 'https://www.dominos.co.in',
+    menu: [
+      { name: 'Cheese Burst Pizza', price: 299, available: true },
+      { name: 'Paneer Tikka Pizza', price: 249, available: true },
+      { name: 'Garlic Bread', price: 99, available: true },
+      { name: 'Pasta Alfredo', price: 179, available: false },
+    ],
   },
   {
     id: '3',
@@ -71,6 +92,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '4 PM - 10 PM',
     coordinates: { lat: 28.6179, lng: 77.2070 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Pani Puri (6 pcs)', price: 30, available: true },
+      { name: 'Aloo Tikki', price: 40, available: true },
+      { name: 'Dahi Bhalla', price: 50, available: true },
+      { name: 'Papdi Chaat', price: 60, available: true },
+    ],
   },
   {
     id: '4',
@@ -88,6 +116,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '12 PM - 11 PM',
     coordinates: { lat: 28.6199, lng: 77.2150 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Hyderabadi Chicken Biryani', price: 220, available: true },
+      { name: 'Mutton Biryani', price: 280, available: true },
+      { name: 'Mirchi Ka Salan', price: 80, available: true },
+      { name: 'Raita', price: 40, available: true },
+    ],
   },
   {
     id: '5',
@@ -105,6 +140,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '11 AM - 10 PM',
     coordinates: { lat: 28.6119, lng: 77.2080 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Steam Momos (8 pcs)', price: 60, available: true },
+      { name: 'Fried Momos (8 pcs)', price: 80, available: true },
+      { name: 'Tandoori Momos', price: 100, available: true },
+      { name: 'Moburg', price: 120, available: false },
+    ],
   },
   {
     id: '6',
@@ -122,6 +164,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '7 AM - 10 PM',
     coordinates: { lat: 28.6100, lng: 77.2120 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Masala Dosa', price: 80, available: true },
+      { name: 'Rava Idli (4 pcs)', price: 60, available: true },
+      { name: 'Filter Coffee', price: 30, available: true },
+      { name: 'Uttapam', price: 70, available: true },
+    ],
   },
   {
     id: '7',
@@ -139,6 +188,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '11 AM - 11 PM',
     coordinates: { lat: 28.6250, lng: 77.2200 },
+    website: 'https://www.mcdelivery.co.in',
+    menu: [
+      { name: 'Double Patty Burger', price: 199, available: true },
+      { name: 'Loaded Fries', price: 129, available: true },
+      { name: 'Chocolate Milkshake', price: 99, available: true },
+      { name: 'Chicken Wings', price: 179, available: false },
+    ],
   },
   {
     id: '8',
@@ -156,6 +212,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '12 PM - 11 PM',
     coordinates: { lat: 28.6170, lng: 77.2040 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Hakka Noodles', price: 120, available: true },
+      { name: 'Chilli Chicken', price: 180, available: true },
+      { name: 'Veg Manchurian', price: 140, available: true },
+      { name: 'Fried Rice', price: 100, available: true },
+    ],
   },
   {
     id: '9',
@@ -173,6 +236,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '6 AM - 12 AM',
     coordinates: { lat: 28.6135, lng: 77.2085 },
+    website: 'https://chaisuttabar.com',
+    menu: [
+      { name: 'Kulhad Chai', price: 20, available: true },
+      { name: 'Maggi', price: 40, available: true },
+      { name: 'Bun Maska', price: 30, available: true },
+      { name: 'Cold Coffee', price: 60, available: true },
+    ],
   },
   {
     id: '10',
@@ -190,6 +260,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '12 PM - 11 PM',
     coordinates: { lat: 28.6300, lng: 77.2250 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Galouti Kebab', price: 350, available: true },
+      { name: 'Shahi Paneer', price: 280, available: true },
+      { name: 'Lucknowi Biryani', price: 420, available: true },
+      { name: 'Roomali Roti', price: 40, available: true },
+    ],
   },
   {
     id: '11',
@@ -207,6 +284,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '5 PM - 2 AM',
     coordinates: { lat: 28.6145, lng: 77.2065 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Paneer Tikka Roll', price: 80, available: true },
+      { name: 'Chicken Roll', price: 100, available: true },
+      { name: 'Egg Roll', price: 60, available: true },
+      { name: 'Double Egg Roll', price: 80, available: true },
+    ],
   },
   {
     id: '12',
@@ -224,6 +308,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '11 AM - 11 PM',
     coordinates: { lat: 28.6165, lng: 77.2130 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Belgian Waffles', price: 150, available: true },
+      { name: 'Brownie Sundae', price: 180, available: true },
+      { name: 'Rabri Falooda', price: 120, available: true },
+      { name: 'Gulab Jamun (2 pcs)', price: 60, available: true },
+    ],
   },
   {
     id: '13',
@@ -241,6 +332,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '9 AM - 10 PM',
     coordinates: { lat: 28.6220, lng: 77.2180 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Sarson Da Saag + Makki Roti', price: 150, available: true },
+      { name: 'Chole Bhature', price: 100, available: true },
+      { name: 'Sweet Lassi', price: 50, available: true },
+      { name: 'Butter Naan', price: 30, available: true },
+    ],
   },
   {
     id: '14',
@@ -258,6 +356,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '8 AM - 9 PM',
     coordinates: { lat: 28.6110, lng: 77.2160 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Protein Bowl', price: 220, available: true },
+      { name: 'Greek Salad', price: 180, available: true },
+      { name: 'Berry Smoothie Bowl', price: 150, available: true },
+      { name: 'Grilled Chicken', price: 250, available: false },
+    ],
   },
   {
     id: '15',
@@ -275,6 +380,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '6 AM - 12 PM, 7 PM - 10 PM',
     coordinates: { lat: 28.6155, lng: 77.2055 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Aloo Paratha', price: 50, available: true },
+      { name: 'Gobi Paratha', price: 60, available: true },
+      { name: 'Paneer Paratha', price: 80, available: true },
+      { name: 'Curd', price: 20, available: true },
+    ],
   },
   {
     id: '16',
@@ -292,6 +404,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '12 PM - 10 PM',
     coordinates: { lat: 28.6080, lng: 77.2220 },
+    website: 'https://www.zomato.com',
+    menu: [
+      { name: 'Tonkotsu Ramen', price: 280, available: true },
+      { name: 'Thai Curry Noodles', price: 220, available: true },
+      { name: 'Wok Fried Noodles', price: 180, available: true },
+      { name: 'Gyoza (6 pcs)', price: 150, available: false },
+    ],
   },
   {
     id: '17',
@@ -309,6 +428,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '10 AM - 10 PM',
     coordinates: { lat: 28.6175, lng: 77.2100 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Sweet Lassi', price: 40, available: true },
+      { name: 'Mango Lassi', price: 60, available: true },
+      { name: 'Rose Lassi', price: 50, available: true },
+      { name: 'Masala Chaas', price: 30, available: true },
+    ],
   },
   {
     id: '18',
@@ -326,6 +452,13 @@ export const restaurants: Restaurant[] = [
     openNow: true,
     timing: '24/7',
     coordinates: { lat: 28.6190, lng: 77.2030 },
+    website: 'https://www.swiggy.com',
+    menu: [
+      { name: 'Midnight Maggi', price: 50, available: true },
+      { name: 'Cheese Sandwich', price: 80, available: true },
+      { name: 'Hot Chocolate', price: 60, available: true },
+      { name: 'Instant Noodles', price: 40, available: true },
+    ],
   },
 ];
 
