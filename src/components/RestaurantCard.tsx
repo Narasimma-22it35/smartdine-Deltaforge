@@ -1,6 +1,7 @@
-import { Star, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { Star, MapPin, Clock, ArrowRight, ExternalLink, IndianRupee } from 'lucide-react';
 import { Restaurant, priceLabels } from '@/data/restaurants';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -9,6 +10,12 @@ interface RestaurantCardProps {
 }
 
 const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCardProps) => {
+  const handleOpenWebsite = () => {
+    window.open(restaurant.website, '_blank', 'noopener,noreferrer');
+  };
+
+  const availableItems = restaurant.menu.filter(item => item.available);
+
   return (
     <div 
       className={cn(
@@ -70,12 +77,30 @@ const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCar
           </div>
         )}
 
+        {/* Available Menu Items */}
+        <div className="mb-4">
+          <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
+            <IndianRupee className="w-3 h-3" />
+            Available Now
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {availableItems.slice(0, 3).map((item) => (
+              <span 
+                key={item.name}
+                className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground flex items-center gap-1"
+              >
+                {item.name} <span className="text-primary font-medium">₹{item.price}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {restaurant.specialties.slice(0, 3).map((specialty) => (
+          {restaurant.specialties.slice(0, 2).map((specialty) => (
             <span 
               key={specialty}
-              className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground"
+              className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent-foreground"
             >
               {specialty}
             </span>
@@ -84,20 +109,25 @@ const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCar
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t border-border">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-3 h-3" />
               {restaurant.distance}
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
+              <Clock className="w-3 h-3" />
               {restaurant.timing}
             </span>
           </div>
-          <button className="flex items-center gap-1 text-sm font-medium text-primary hover:gap-2 transition-all">
-            View
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={handleOpenWebsite}
+            className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-all"
+          >
+            Order Now
+            <ExternalLink className="w-3 h-3" />
+          </Button>
         </div>
       </div>
     </div>

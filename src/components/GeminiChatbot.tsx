@@ -15,7 +15,7 @@ const GeminiChatbot = () => {
     {
       id: '1',
       role: 'assistant',
-      content: "Hey there! 👋 I'm your SmartDine food buddy. Ask me anything about local restaurants, food recommendations, or help finding the perfect meal for your mood!",
+      content: "Hey there! I am your SmartDine food buddy. Ask me anything about local restaurants, food recommendations, or help finding the perfect meal for your mood!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -53,7 +53,7 @@ const GeminiChatbot = () => {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || "I'm having trouble responding right now. Please try again!",
+        content: data.response || "I am having trouble responding right now. Please try again!",
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
