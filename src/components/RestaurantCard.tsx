@@ -1,4 +1,4 @@
-import { Star, MapPin, Clock, ArrowRight, ExternalLink, IndianRupee } from 'lucide-react';
+import { Star, MapPin, Clock, ExternalLink, IndianRupee, Navigation } from 'lucide-react';
 import { Restaurant, priceLabels } from '@/data/restaurants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,16 @@ interface RestaurantCardProps {
   restaurant: Restaurant;
   recommendation?: string;
   index?: number;
+  onShowRoute?: (restaurant: Restaurant) => void;
 }
 
-const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCardProps) => {
+const RestaurantCard = ({ restaurant, recommendation, index = 0, onShowRoute }: RestaurantCardProps) => {
   const handleOpenWebsite = () => {
     window.open(restaurant.website, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleGetDirections = () => {
+    onShowRoute?.(restaurant);
   };
 
   const availableItems = (restaurant.menu || []).filter(item => item.available);
@@ -119,15 +124,26 @@ const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCar
               {restaurant.timing}
             </span>
           </div>
-          <Button 
-            size="sm" 
-            variant="ghost"
-            onClick={handleOpenWebsite}
-            className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-all"
-          >
-            Order Now
-            <ExternalLink className="w-3 h-3" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={handleGetDirections}
+              className="flex items-center gap-1 text-xs font-medium"
+            >
+              <Navigation className="w-3 h-3" />
+              Map
+            </Button>
+            <Button 
+              size="sm" 
+              variant="default"
+              onClick={handleOpenWebsite}
+              className="flex items-center gap-1 text-xs font-medium"
+            >
+              Order
+              <ExternalLink className="w-3 h-3" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

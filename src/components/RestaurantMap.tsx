@@ -7,9 +7,10 @@ interface RestaurantMapProps {
   restaurants: Restaurant[];
   selectedRestaurant?: Restaurant | null;
   onSelectRestaurant?: (restaurant: Restaurant) => void;
+  initialRoute?: Restaurant | null;
 }
 
-const RestaurantMap = ({ restaurants, selectedRestaurant, onSelectRestaurant }: RestaurantMapProps) => {
+const RestaurantMap = ({ restaurants, selectedRestaurant, onSelectRestaurant, initialRoute }: RestaurantMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -40,6 +41,13 @@ const RestaurantMap = ({ restaurants, selectedRestaurant, onSelectRestaurant }: 
       setIsLoadingLocation(false);
     }
   }, []);
+
+  // Set initial route when passed from grid
+  useEffect(() => {
+    if (initialRoute && isMapReady) {
+      setRouteDestination(initialRoute);
+    }
+  }, [initialRoute, isMapReady]);
 
   useEffect(() => {
     if (isLoadingLocation || !mapContainerRef.current || !userLocation) return;

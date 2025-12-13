@@ -6,13 +6,15 @@ interface RestaurantGridProps {
   recommendations?: Map<string, string>;
   title?: string;
   subtitle?: string;
+  onShowRoute?: (restaurant: Restaurant) => void;
 }
 
 const RestaurantGrid = ({ 
   restaurants, 
   recommendations,
   title = "Discover Local Favorites",
-  subtitle = "Handpicked spots loved by students and locals alike"
+  subtitle = "Handpicked spots loved by students and locals alike",
+  onShowRoute
 }: RestaurantGridProps) => {
   if (restaurants.length === 0) {
     return (
@@ -47,6 +49,7 @@ const RestaurantGrid = ({
               restaurant={restaurant}
               recommendation={recommendations?.get(restaurant.id)}
               index={index}
+              onShowRoute={onShowRoute}
             />
           ))}
         </div>

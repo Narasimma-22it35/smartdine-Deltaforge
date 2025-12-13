@@ -1,4 +1,4 @@
-import { Utensils, Menu, X } from 'lucide-react';
+import { Menu, X, Flame } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -17,12 +17,13 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 gradient-warm rounded-xl flex items-center justify-center shadow-soft">
-            <Utensils className="w-5 h-5 text-primary-foreground" />
+          <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-glow overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-t from-accent/50 to-transparent opacity-60" />
+            <Flame className="w-6 h-6 text-primary-foreground relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-3 bg-primary/30 rounded-full blur-md" />
           </div>
           <div>
-            <h1 className="text-xl font-display font-bold text-foreground">SmartDine</h1>
-            <p className="text-xs text-muted-foreground font-body">AI Food Discovery</p>
+            <h1 className="text-xl font-display font-bold text-foreground tracking-tight">SmartDine</h1>
           </div>
         </div>
 

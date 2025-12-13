@@ -15,6 +15,7 @@ const Index = () => {
   const [cuisineFilter, setCuisineFilter] = useState('All');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [routeDestination, setRouteDestination] = useState<Restaurant | null>(null);
   const { isLoading, result, search, surpriseMe, reset } = useAIRecommendations();
 
   const filteredRestaurants = useMemo(() => {
@@ -32,6 +33,14 @@ const Index = () => {
     if (cuisine !== 'All') {
       reset();
     }
+  };
+
+  const handleShowRoute = (restaurant: Restaurant) => {
+    setRouteDestination(restaurant);
+    setViewMode('map');
+    setTimeout(() => {
+      document.getElementById('map')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   return (
@@ -88,6 +97,7 @@ const Index = () => {
               ? "Curated based on your craving" 
               : "Handpicked spots loved by students and locals alike"
             }
+            onShowRoute={handleShowRoute}
           />
         ) : (
           <section className="container mx-auto px-4 pb-16">
@@ -103,6 +113,7 @@ const Index = () => {
               restaurants={filteredRestaurants}
               selectedRestaurant={selectedRestaurant}
               onSelectRestaurant={setSelectedRestaurant}
+              initialRoute={routeDestination}
             />
           </section>
         )}
@@ -113,7 +124,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="font-display font-bold text-lg text-foreground mb-4">SmartDine AI</h3>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">SmartDine</h3>
               <p className="text-sm text-muted-foreground">
                 Your intelligent food discovery companion. Find the perfect meal based on your mood, budget, and cravings.
               </p>
@@ -129,7 +140,7 @@ const Index = () => {
             <div>
               <h3 className="font-display font-bold text-lg text-foreground mb-4">Contact</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Email: support@smartdine.ai</li>
+                <li>Email: support@smartdine.com</li>
                 <li>Phone: +91 98765 43210</li>
                 <li>Available: 24/7</li>
               </ul>
@@ -137,7 +148,7 @@ const Index = () => {
           </div>
           <div className="pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              Made with love for hungry students | SmartDine AI 2024
+              © 2024 SmartDine. All rights reserved.
             </p>
           </div>
         </div>
