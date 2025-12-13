@@ -41,6 +41,7 @@
     --gradient-subtle: linear-gradient(180deg, hsl(30, 25%, 97%) 0%, hsl(30, 30%, 94%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(30, 30%, 99%) 0%, hsl(30, 25%, 96%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(24, 95%, 53%) 0%, hsl(15, 90%, 48%) 50%, hsl(0, 75%, 45%) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(24, 100%, 55%) 0%, hsl(0, 85%, 55%) 100%);
     
     --shadow-soft: 0 4px 20px -4px hsl(24 95% 53% / 0.15);
     --shadow-card: 0 8px 32px -8px hsl(20 25% 15% / 0.08);
@@ -171,8 +172,9 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background: var(--gradient-warm);
+    @apply bg-clip-text text-transparent font-bold;
+    background: var(--gradient-text);
+    filter: brightness(1.1);
   }
 
   .animate-float {
