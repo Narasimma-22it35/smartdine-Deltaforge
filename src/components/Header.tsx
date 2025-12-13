@@ -1,7 +1,7 @@
 import { Utensils, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import NavLink from '@/components/NavLink';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,9 +29,18 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <NavLink key={link.href} href={link.href}>
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(e) => {
+                e.preventDefault();
+                const targetId = link.href.replace('#', '');
+                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
               {link.label}
-            </NavLink>
+            </a>
           ))}
         </nav>
 
@@ -51,13 +60,19 @@ const Header = () => {
         <div className="md:hidden bg-background border-b border-border">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
             {navLinks.map((link) => (
-              <NavLink
+              <a
                 key={link.href}
                 href={link.href}
-                className="block py-2 px-3 rounded-lg hover:bg-secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetId = link.href.replace('#', '');
+                  document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+                  setIsMobileMenuOpen(false);
+                }}
+                className="block py-2 px-3 rounded-lg hover:bg-secondary text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.label}
-              </NavLink>
+              </a>
             ))}
           </nav>
         </div>
