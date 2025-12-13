@@ -14,7 +14,7 @@ const RestaurantCard = ({ restaurant, recommendation, index = 0 }: RestaurantCar
     window.open(restaurant.website, '_blank', 'noopener,noreferrer');
   };
 
-  const availableItems = restaurant.menu.filter(item => item.available);
+  const availableItems = (restaurant.menu || []).filter(item => item.available);
 
   return (
     <div 
