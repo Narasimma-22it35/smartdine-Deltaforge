@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Loader2, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { restaurants, Restaurant, priceLabels } from '@/data/restaurants';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  restaurants?: Restaurant[];
 }
 
 const GeminiChatbot = () => {
@@ -30,6 +32,51 @@ const GeminiChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
+  const findMatchingRestaurants = (query: string): Restaurant[] => {
+    const lowerQuery = query.toLowerCase();
+    const keywords = lowerQuery.split(/\s+/);
+    
+    // Check for restaurant-related keywords
+    const restaurantKeywords = ['restaurant', 'food', 'eat', 'hungry', 'place', 'nearby', 'around', 'suggest', 'recommend', 'find', 'show', 'best', 'good', 'cheap', 'budget', 'expensive', 'pizza', 'biryani', 'momos', 'chai', 'coffee', 'burger', 'chinese', 'indian', 'south', 'north', 'dosa', 'thali', 'paratha', 'chaat', 'dessert', 'sweet', 'late night', 'breakfast', 'lunch', 'dinner'];
+    
+    const isRestaurantQuery = keywords.some(k => restaurantKeywords.some(rk => rk.includes(k) || k.includes(rk)));
+    
+    if (!isRestaurantQuery) return [];
+
+    // Score-based matching
+    const scored = restaurants.map(r => {
+      let score = 0;
+      
+      keywords.forEach(keyword => {
+        if (r.name.toLowerCase().includes(keyword)) score += 10;
+        if (r.cuisine.toLowerCase().includes(keyword)) score += 8;
+        if (r.tags.some(t => t.toLowerCase().includes(keyword))) score += 5;
+        if (r.specialties.some(s => s.toLowerCase().includes(keyword))) score += 6;
+        if (r.description.toLowerCase().includes(keyword)) score += 3;
+        if (r.location.toLowerCase().includes(keyword)) score += 4;
+      });
+      
+      // Bonus for open restaurants
+      if (r.openNow) score += 2;
+      
+      // Budget keywords
+      if (lowerQuery.includes('cheap') || lowerQuery.includes('budget')) {
+        if (r.priceRange === 'budget') score += 5;
+      }
+      if (lowerQuery.includes('premium') || lowerQuery.includes('expensive') || lowerQuery.includes('fancy')) {
+        if (r.priceRange === 'expensive') score += 5;
+      }
+      
+      return { restaurant: r, score };
+    });
+
+    return scored
+      .filter(s => s.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(s => s.restaurant);
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -40,12 +87,16 @@ const GeminiChatbot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const userQuery = input.trim();
     setInput('');
     setIsLoading(true);
 
     try {
+      // Find matching restaurants based on user query
+      const matchingRestaurants = findMatchingRestaurants(userQuery);
+
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
-        body: { message: input.trim() },
+        body: { message: userQuery },
       });
 
       if (error) throw error;
@@ -54,6 +105,7 @@ const GeminiChatbot = () => {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response || "I am having trouble responding right now. Please try again!",
+        restaurants: matchingRestaurants.length > 0 ? matchingRestaurants : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -76,6 +128,33 @@ const GeminiChatbot = () => {
       sendMessage();
     }
   };
+
+  const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
+    <div className="flex items-start gap-2 p-2 bg-background rounded-lg border border-border/50 mt-2">
+      <img 
+        src={restaurant.image} 
+        alt={restaurant.name}
+        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+      />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1">
+          <h5 className="text-xs font-semibold text-foreground truncate">{restaurant.name}</h5>
+          <span className="text-[10px] text-primary font-medium">{priceLabels[restaurant.priceRange]}</span>
+        </div>
+        <p className="text-[10px] text-muted-foreground">{restaurant.cuisine}</p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+            <Star className="w-2.5 h-2.5 text-primary fill-primary" />
+            {restaurant.rating}
+          </span>
+          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+            <MapPin className="w-2.5 h-2.5" />
+            {restaurant.distance}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -121,14 +200,23 @@ const GeminiChatbot = () => {
                     <Bot className="w-4 h-4 text-primary" />
                   )}
                 </div>
-                <div
-                  className={`max-w-[75%] px-4 py-2 rounded-2xl ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                      : 'bg-secondary text-secondary-foreground rounded-tl-sm'
-                  }`}
-                >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <div className={`max-w-[75%] ${message.role === 'user' ? 'text-right' : ''}`}>
+                  <div
+                    className={`px-4 py-2 rounded-2xl ${
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                        : 'bg-secondary text-secondary-foreground rounded-tl-sm'
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                  {message.restaurants && message.restaurants.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {message.restaurants.map(r => (
+                        <RestaurantCard key={r.id} restaurant={r} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
