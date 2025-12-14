@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import SearchInterface from '@/components/SearchInterface';
 import AIResponse from '@/components/AIResponse';
 import CuisineFilter from '@/components/CuisineFilter';
+import PriceFilter from '@/components/PriceFilter';
 import RestaurantGrid from '@/components/RestaurantGrid';
 import RestaurantMap from '@/components/RestaurantMap';
 import GeminiChatbot from '@/components/GeminiChatbot';
@@ -13,24 +14,37 @@ import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [cuisineFilter, setCuisineFilter] = useState('All');
+  const [priceFilter, setPriceFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [routeDestination, setRouteDestination] = useState<Restaurant | null>(null);
+  const [highlightedRestaurant, setHighlightedRestaurant] = useState<Restaurant | null>(null);
   const { isLoading, result, search, surpriseMe, reset } = useAIRecommendations();
 
   const filteredRestaurants = useMemo(() => {
-    if (result) {
-      if (cuisineFilter === 'All') return result.restaurants;
-      return result.restaurants.filter(r => r.cuisine === cuisineFilter);
+    let source = result ? result.restaurants : restaurants;
+    
+    if (cuisineFilter !== 'All') {
+      source = source.filter(r => r.cuisine === cuisineFilter);
     }
     
-    if (cuisineFilter === 'All') return restaurants;
-    return restaurants.filter(r => r.cuisine === cuisineFilter);
-  }, [result, cuisineFilter]);
+    if (priceFilter !== 'all') {
+      source = source.filter(r => r.priceRange === priceFilter);
+    }
+    
+    return source;
+  }, [result, cuisineFilter, priceFilter]);
 
   const handleCuisineChange = (cuisine: string) => {
     setCuisineFilter(cuisine);
     if (cuisine !== 'All') {
+      reset();
+    }
+  };
+
+  const handlePriceChange = (price: string) => {
+    setPriceFilter(price);
+    if (price !== 'all') {
       reset();
     }
   };
@@ -43,9 +57,25 @@ const Index = () => {
     }, 100);
   };
 
+  const handleHeaderSelectRestaurant = (restaurant: Restaurant) => {
+    setHighlightedRestaurant(restaurant);
+    setCuisineFilter('All');
+    setPriceFilter('all');
+    reset();
+    // Scroll to restaurants section
+    setTimeout(() => {
+      document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  // If a restaurant is highlighted from search, show only that restaurant first
+  const displayRestaurants = highlightedRestaurant 
+    ? [highlightedRestaurant, ...filteredRestaurants.filter(r => r.id !== highlightedRestaurant.id)]
+    : filteredRestaurants;
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header onSelectRestaurant={handleHeaderSelectRestaurant} />
       
       <main>
         <SearchInterface 
@@ -59,10 +89,19 @@ const Index = () => {
           isVisible={!!result?.aiMessage}
         />
 
-        <CuisineFilter 
-          selected={cuisineFilter}
-          onChange={handleCuisineChange}
-        />
+        {/* Filters Section */}
+        <section className="container mx-auto px-4 py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <CuisineFilter 
+              selected={cuisineFilter}
+              onChange={handleCuisineChange}
+            />
+            <PriceFilter 
+              selected={priceFilter}
+              onChange={handlePriceChange}
+            />
+          </div>
+        </section>
 
         {/* View Toggle */}
         <div className="container mx-auto px-4 mb-6">
@@ -90,7 +129,7 @@ const Index = () => {
 
         {viewMode === 'grid' ? (
           <RestaurantGrid 
-            restaurants={filteredRestaurants}
+            restaurants={displayRestaurants}
             recommendations={result?.recommendations}
             title={result ? "AI Picks for You" : "Discover Local Favorites"}
             subtitle={result 
@@ -100,7 +139,7 @@ const Index = () => {
             onShowRoute={handleShowRoute}
           />
         ) : (
-          <section className="container mx-auto px-4 pb-16">
+          <section id="map" className="container mx-auto px-4 pb-16">
             <div className="text-center mb-8">
               <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
                 Explore Nearby Eateries
@@ -110,7 +149,7 @@ const Index = () => {
               </p>
             </div>
             <RestaurantMap 
-              restaurants={filteredRestaurants}
+              restaurants={displayRestaurants}
               selectedRestaurant={selectedRestaurant}
               onSelectRestaurant={setSelectedRestaurant}
               initialRoute={routeDestination}
