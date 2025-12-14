@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Star, Clock } from 'lucide-react';
-import { Restaurant, restaurants, priceLabels } from '@/data/restaurants';
+import { Search, MapPin, Star, Clock, Navigation } from 'lucide-react';
+import { Restaurant } from '@/data/restaurants';
+import { priceLabels } from '@/data/restaurants';
+import { indianRestaurants } from '@/data/indianRestaurants';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface SearchDropdownProps {
   onSelectRestaurant: (restaurant: Restaurant) => void;
+  onShowRoute?: (restaurant: Restaurant) => void;
 }
 
-const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
+const SearchDropdown = ({ onSelectRestaurant, onShowRoute }: SearchDropdownProps) => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [results, setResults] = useState<Restaurant[]>([]);
@@ -21,7 +25,10 @@ const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
     }
 
     const searchQuery = query.toLowerCase();
-    const filtered = restaurants.filter(r => 
+    // Search in both local and Indian restaurants dataset
+    const allRestaurants = [...indianRestaurants];
+    
+    const filtered = allRestaurants.filter(r => 
       r.name.toLowerCase().includes(searchQuery) ||
       r.cuisine.toLowerCase().includes(searchQuery) ||
       r.location.toLowerCase().includes(searchQuery) ||
@@ -29,7 +36,7 @@ const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
       r.specialties.some(s => s.toLowerCase().includes(searchQuery))
     );
     
-    setResults(filtered.slice(0, 6));
+    setResults(filtered.slice(0, 8));
   }, [query]);
 
   useEffect(() => {
@@ -54,6 +61,13 @@ const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
     setIsFocused(false);
   };
 
+  const handleShowRoute = (e: React.MouseEvent, restaurant: Restaurant) => {
+    e.stopPropagation();
+    onShowRoute?.(restaurant);
+    setQuery('');
+    setIsFocused(false);
+  };
+
   const showDropdown = isFocused && (results.length > 0 || query.trim().length >= 2);
 
   return (
@@ -69,7 +83,7 @@ const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          placeholder="Search restaurants, cuisines..."
+          placeholder="Search restaurants, cities, cuisines..."
           className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
       </div>
@@ -80,44 +94,59 @@ const SearchDropdown = ({ onSelectRestaurant }: SearchDropdownProps) => {
           className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-elevated overflow-hidden z-50 animate-slide-up"
         >
           {results.length > 0 ? (
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-96 overflow-y-auto">
               {results.map((restaurant) => (
-                <button
+                <div
                   key={restaurant.id}
-                  onClick={() => handleSelect(restaurant)}
-                  className="w-full flex items-start gap-3 p-3 hover:bg-secondary/50 transition-colors text-left"
+                  className="w-full flex items-start gap-3 p-3 hover:bg-secondary/50 transition-colors text-left border-b border-border/30 last:border-b-0"
                 >
-                  <img 
-                    src={restaurant.image} 
-                    alt={restaurant.name}
-                    className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium text-foreground truncate">{restaurant.name}</h4>
-                      <span className="text-xs text-primary font-medium">
-                        {priceLabels[restaurant.priceRange]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">{restaurant.cuisine}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Star className="w-3 h-3 text-primary fill-primary" />
-                        {restaurant.rating}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="w-3 h-3" />
-                        {restaurant.distance}
-                      </span>
-                      {restaurant.openNow && (
-                        <span className="flex items-center gap-1 text-xs text-green-600">
-                          <Clock className="w-3 h-3" />
-                          Open
+                  <button 
+                    onClick={() => handleSelect(restaurant)}
+                    className="flex items-start gap-3 flex-1"
+                  >
+                    <img 
+                      src={restaurant.image} 
+                      alt={restaurant.name}
+                      className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-foreground truncate">{restaurant.name}</h4>
+                        <span className="text-xs text-primary font-medium">
+                          {priceLabels[restaurant.priceRange]}
                         </span>
-                      )}
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{restaurant.cuisine} • {restaurant.location}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Star className="w-3 h-3 text-primary fill-primary" />
+                          {restaurant.rating}
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin className="w-3 h-3" />
+                          {restaurant.distance}
+                        </span>
+                        {restaurant.openNow && (
+                          <span className="flex items-center gap-1 text-xs text-green-600">
+                            <Clock className="w-3 h-3" />
+                            Open
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+                  {onShowRoute && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={(e) => handleShowRoute(e, restaurant)}
+                      className="flex-shrink-0 h-8 gap-1"
+                    >
+                      <Navigation className="w-3 h-3" />
+                      Route
+                    </Button>
+                  )}
+                </div>
               ))}
             </div>
           ) : (

@@ -8,9 +8,10 @@ import { Restaurant } from '@/data/restaurants';
 
 interface HeaderProps {
   onSelectRestaurant?: (restaurant: Restaurant) => void;
+  onShowRoute?: (restaurant: Restaurant) => void;
 }
 
-const Header = ({ onSelectRestaurant }: HeaderProps) => {
+const Header = ({ onSelectRestaurant, onShowRoute }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -40,7 +41,7 @@ const Header = ({ onSelectRestaurant }: HeaderProps) => {
 
         {/* Desktop Search */}
         <div className="hidden md:flex flex-1 max-w-md mx-4">
-          <SearchDropdown onSelectRestaurant={handleSelectRestaurant} />
+          <SearchDropdown onSelectRestaurant={handleSelectRestaurant} onShowRoute={onShowRoute} />
         </div>
 
         {/* Desktop Navigation */}
@@ -97,7 +98,7 @@ const Header = ({ onSelectRestaurant }: HeaderProps) => {
       {/* Mobile Search Bar */}
       {showMobileSearch && (
         <div className="md:hidden px-4 pb-3 animate-slide-up">
-          <SearchDropdown onSelectRestaurant={handleSelectRestaurant} />
+          <SearchDropdown onSelectRestaurant={handleSelectRestaurant} onShowRoute={onShowRoute} />
         </div>
       )}
 

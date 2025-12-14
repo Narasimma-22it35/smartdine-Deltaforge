@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Loader2, MapPin, Star } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Loader2, MapPin, Star, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { restaurants, Restaurant, priceLabels } from '@/data/restaurants';
+import { Restaurant, priceLabels } from '@/data/restaurants';
+import { indianRestaurants, getNearbyRestaurants } from '@/data/indianRestaurants';
+import { useUserLocation } from '@/hooks/useUserLocation';
 
 interface Message {
   id: string;
@@ -11,18 +13,23 @@ interface Message {
   restaurants?: Restaurant[];
 }
 
-const GeminiChatbot = () => {
+interface GeminiChatbotProps {
+  onShowRoute?: (restaurant: Restaurant) => void;
+}
+
+const GeminiChatbot = ({ onShowRoute }: GeminiChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: "Hey there! I am your SmartDine food buddy. Ask me anything about local restaurants, food recommendations, or help finding the perfect meal for your mood!",
+      content: "Hey there! I am your SmartDine food buddy. Ask me about restaurants near you, find places in any city, or tell me what you are craving!",
     },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { lat, lng } = useUserLocation();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,30 +43,36 @@ const GeminiChatbot = () => {
     const lowerQuery = query.toLowerCase();
     const keywords = lowerQuery.split(/\s+/);
     
+    // Check if user is asking for nearby restaurants
+    const nearbyKeywords = ['nearby', 'near me', 'around me', 'close to me', 'near by', 'closest', 'surrounding', 'local'];
+    const isNearbyQuery = nearbyKeywords.some(k => lowerQuery.includes(k));
+    
+    if (isNearbyQuery) {
+      return getNearbyRestaurants(lat, lng, 50).slice(0, 5);
+    }
+    
     // Check for restaurant-related keywords
-    const restaurantKeywords = ['restaurant', 'food', 'eat', 'hungry', 'place', 'nearby', 'around', 'suggest', 'recommend', 'find', 'show', 'best', 'good', 'cheap', 'budget', 'expensive', 'pizza', 'biryani', 'momos', 'chai', 'coffee', 'burger', 'chinese', 'indian', 'south', 'north', 'dosa', 'thali', 'paratha', 'chaat', 'dessert', 'sweet', 'late night', 'breakfast', 'lunch', 'dinner'];
+    const restaurantKeywords = ['restaurant', 'food', 'eat', 'hungry', 'place', 'suggest', 'recommend', 'find', 'show', 'best', 'good', 'cheap', 'budget', 'expensive', 'pizza', 'biryani', 'momos', 'chai', 'coffee', 'burger', 'chinese', 'indian', 'south', 'north', 'dosa', 'thali', 'paratha', 'chaat', 'dessert', 'sweet', 'late night', 'breakfast', 'lunch', 'dinner', 'kebab', 'mughlai', 'hyderabadi', 'goan', 'punjabi', 'gujarati', 'rajasthani', 'kerala', 'delhi', 'mumbai', 'bengaluru', 'chennai', 'kolkata', 'hyderabad', 'jaipur', 'lucknow', 'pune', 'goa', 'kochi', 'amritsar', 'ahmedabad', 'varanasi'];
     
     const isRestaurantQuery = keywords.some(k => restaurantKeywords.some(rk => rk.includes(k) || k.includes(rk)));
     
     if (!isRestaurantQuery) return [];
 
-    // Score-based matching
-    const scored = restaurants.map(r => {
+    // Score-based matching against all Indian restaurants
+    const scored = indianRestaurants.map(r => {
       let score = 0;
       
       keywords.forEach(keyword => {
         if (r.name.toLowerCase().includes(keyword)) score += 10;
         if (r.cuisine.toLowerCase().includes(keyword)) score += 8;
+        if (r.location.toLowerCase().includes(keyword)) score += 7;
         if (r.tags.some(t => t.toLowerCase().includes(keyword))) score += 5;
         if (r.specialties.some(s => s.toLowerCase().includes(keyword))) score += 6;
         if (r.description.toLowerCase().includes(keyword)) score += 3;
-        if (r.location.toLowerCase().includes(keyword)) score += 4;
       });
       
-      // Bonus for open restaurants
       if (r.openNow) score += 2;
       
-      // Budget keywords
       if (lowerQuery.includes('cheap') || lowerQuery.includes('budget')) {
         if (r.priceRange === 'budget') score += 5;
       }
@@ -73,7 +86,7 @@ const GeminiChatbot = () => {
     return scored
       .filter(s => s.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
+      .slice(0, 5)
       .map(s => s.restaurant);
   };
 
@@ -129,7 +142,7 @@ const GeminiChatbot = () => {
     }
   };
 
-  const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
+  const RestaurantMiniCard = ({ restaurant }: { restaurant: Restaurant }) => (
     <div className="flex items-start gap-2 p-2 bg-background rounded-lg border border-border/50 mt-2">
       <img 
         src={restaurant.image} 
@@ -141,16 +154,30 @@ const GeminiChatbot = () => {
           <h5 className="text-xs font-semibold text-foreground truncate">{restaurant.name}</h5>
           <span className="text-[10px] text-primary font-medium">{priceLabels[restaurant.priceRange]}</span>
         </div>
-        <p className="text-[10px] text-muted-foreground">{restaurant.cuisine}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-            <Star className="w-2.5 h-2.5 text-primary fill-primary" />
-            {restaurant.rating}
-          </span>
-          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-            <MapPin className="w-2.5 h-2.5" />
-            {restaurant.distance}
-          </span>
+        <p className="text-[10px] text-muted-foreground truncate">{restaurant.cuisine} • {restaurant.location}</p>
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+              <Star className="w-2.5 h-2.5 text-primary fill-primary" />
+              {restaurant.rating}
+            </span>
+            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+              <MapPin className="w-2.5 h-2.5" />
+              {restaurant.distance}
+            </span>
+          </div>
+          {onShowRoute && (
+            <button 
+              onClick={() => {
+                onShowRoute(restaurant);
+                setIsOpen(false);
+              }}
+              className="flex items-center gap-0.5 text-[10px] text-primary hover:underline"
+            >
+              <Navigation className="w-2.5 h-2.5" />
+              Route
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -213,7 +240,7 @@ const GeminiChatbot = () => {
                   {message.restaurants && message.restaurants.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {message.restaurants.map(r => (
-                        <RestaurantCard key={r.id} restaurant={r} />
+                        <RestaurantMiniCard key={r.id} restaurant={r} />
                       ))}
                     </div>
                   )}
