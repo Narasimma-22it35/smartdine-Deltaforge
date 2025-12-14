@@ -7,8 +7,11 @@ import PriceFilter from '@/components/PriceFilter';
 import RestaurantGrid from '@/components/RestaurantGrid';
 import RestaurantMap from '@/components/RestaurantMap';
 import GeminiChatbot from '@/components/GeminiChatbot';
-import { restaurants, Restaurant } from '@/data/restaurants';
+import NearbyRestaurants from '@/components/NearbyRestaurants';
+import { Restaurant } from '@/data/restaurants';
+import { indianRestaurants } from '@/data/indianRestaurants';
 import { useAIRecommendations } from '@/hooks/useAIRecommendations';
+import { useUserLocation } from '@/hooks/useUserLocation';
 import { Map, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -20,9 +23,10 @@ const Index = () => {
   const [routeDestination, setRouteDestination] = useState<Restaurant | null>(null);
   const [highlightedRestaurant, setHighlightedRestaurant] = useState<Restaurant | null>(null);
   const { isLoading, result, search, surpriseMe, reset } = useAIRecommendations();
+  const { lat, lng, city } = useUserLocation();
 
   const filteredRestaurants = useMemo(() => {
-    let source = result ? result.restaurants : restaurants;
+    let source = result ? result.restaurants : indianRestaurants;
     
     if (cuisineFilter !== 'All') {
       source = source.filter(r => r.cuisine === cuisineFilter);
@@ -75,7 +79,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onSelectRestaurant={handleHeaderSelectRestaurant} />
+      <Header onSelectRestaurant={handleHeaderSelectRestaurant} onShowRoute={handleShowRoute} />
       
       <main>
         <SearchInterface 
@@ -89,7 +93,17 @@ const Index = () => {
           isVisible={!!result?.aiMessage}
         />
 
-        {/* Filters Section */}
+        {/* Nearby Famous Restaurants */}
+        <NearbyRestaurants 
+          userLat={lat}
+          userLng={lng}
+          cityName={city}
+          onShowRoute={handleShowRoute}
+          onViewAll={() => {
+            setViewMode('grid');
+            document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
         <section className="container mx-auto px-4 py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <CuisineFilter 
@@ -194,7 +208,7 @@ const Index = () => {
       </footer>
 
       {/* Gemini Chatbot */}
-      <GeminiChatbot />
+      <GeminiChatbot onShowRoute={handleShowRoute} />
     </div>
   );
 };
